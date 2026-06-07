@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM History 11 &mdash; NVIDIA, AI2 &amp; the Open-Model Builders</title>
+    <meta name="description" content="The producers outside the consumer-chat race — NVIDIA's Nemotron, the Allen Institute's truly-open OLMo, EleutherAI, BigScience/BLOOM, Hugging Face, Databricks/MosaicML, IBM Granite, Microsoft Phi, TII Falcon and the rest. Hardware vendors, open-science non-profits, and enterprise builders who shaped the open-weight era.">
+    <link rel="canonical" href="https://brendanjameslynskey.github.io/LLM_History_11_NVIDIA_AI2_Open_Model_Builders/">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="NVIDIA, AI2 & the Open-Model Builders">
+    <meta property="og:description" content="Hardware vendors, open-science non-profits, and enterprise builders — Nemotron, OLMo, the Pile, BLOOM, DBRX, Granite, Phi, Falcon — and why they exist alongside the consumer-chat labs.">
+    <meta property="og:url" content="https://brendanjameslynskey.github.io/LLM_History_11_NVIDIA_AI2_Open_Model_Builders/">
+    <meta property="og:site_name" content="LLM Hub">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="NVIDIA, AI2 & the Open-Model Builders">
+    <meta name="twitter:description" content="The producers outside the consumer-chat race — Nemotron, OLMo, BLOOM, DBRX, Granite, Phi, Falcon — and why they exist.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a; --bg-card: #0d1117; --bg-code: #161b22;
+            --text-primary: #e6edf3; --text-secondary: #8b949e;
+            --accent: #A371F7; --accent-dim: #A371F744; --accent-glow: #A371F733;
+            --accent-2: #FF7B72; --accent-3: #F0A726; --accent-4: #3FB950;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 17px; line-height: 1.7; overflow-x: hidden; }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem 1.5rem; text-align: center; position: relative; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+        .hero > * { position: relative; z-index: 1; }
+        .series-label { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; color: var(--text-primary); line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 .accent { color: var(--accent); }
+        .hero .subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; margin-bottom: 2rem; }
+        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 2.5rem; }
+        .tag { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: var(--accent-dim); white-space: nowrap; }
+        .tag.r { border-color: var(--accent-2); color: var(--accent-2); background: rgba(255,123,114,0.10); }
+        .tag.y { border-color: var(--accent-3); color: var(--accent-3); background: rgba(240,167,38,0.10); }
+        .tag.g { border-color: var(--accent-4); color: var(--accent-4); background: rgba(63,185,80,0.10); }
+        .pipeline { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; max-width: var(--max-width); }
+        .pipeline-step { font-family: var(--font-mono); font-size: 0.7rem; padding: 0.3rem 0.7rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-secondary); white-space: nowrap; }
+        .pipeline-arrow { color: var(--accent); font-size: 0.9rem; font-weight: 700; }
+        .slide { min-height: 100vh; max-width: var(--max-width); margin: 0 auto; padding: 4rem 1.5rem; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .slide-number { font-family: var(--font-display); font-size: 5rem; font-weight: 700; color: var(--accent-dim); position: absolute; top: 2rem; right: 1.5rem; line-height: 1; user-select: none; }
+        .slide h2 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem; line-height: 1.25; }
+        .slide h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .slide p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .slide p strong { color: var(--text-primary); }
+        .slide ul, .slide ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .slide li { margin-bottom: 0.4rem; }
+        .slide li strong { color: var(--text-primary); }
+        .slide code { font-family: var(--font-mono); font-size: 0.88em; background: var(--bg-code); padding: 0.1rem 0.35rem; border-radius: 3px; color: var(--accent); }
+        .table-wrap { overflow-x: auto; margin: 1.25rem 0; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: var(--bg-code); color: var(--accent); font-weight: 600; text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-family: var(--font-display); white-space: nowrap; }
+        td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        .diagram-grid { display: grid; gap: 0.75rem; margin: 1.5rem 0; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+        .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .diagram-panel { padding: 1rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; }
+        .diagram-panel.accent-border { border-left: 3px solid var(--accent); }
+        .diagram-panel.r { border-left: 3px solid var(--accent-2); }
+        .diagram-panel.y { border-left: 3px solid var(--accent-3); }
+        .diagram-panel.g { border-left: 3px solid var(--accent-4); }
+        .diagram-panel h4 { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .diagram-panel.r h4 { color: var(--accent-2); }
+        .diagram-panel.y h4 { color: var(--accent-3); }
+        .diagram-panel.g h4 { color: var(--accent-4); }
+        .diagram-panel p, .diagram-panel ul { font-size: 0.9rem; }
+        .callout { background: var(--bg-card); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1.25rem 0; }
+        .callout p { margin-bottom: 0; }
+        .callout .callout-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+        .callout.r { border-left-color: var(--accent-2); } .callout.r .callout-label { color: var(--accent-2); }
+        .callout.y { border-left-color: var(--accent-3); } .callout.y .callout-label { color: var(--accent-3); }
+        .callout.g { border-left-color: var(--accent-4); } .callout.g .callout-label { color: var(--accent-4); }
+        .quote { font-family: var(--font-display); font-size: 1.15rem; font-style: italic; color: var(--text-primary); padding: 1rem 1.5rem; border-left: 3px solid var(--accent); background: var(--bg-card); margin: 1.25rem 0; border-radius: 0 8px 8px 0; }
+        .quote .attr { display: block; margin-top: 0.5rem; font-style: normal; font-size: 0.85rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .contents-list { list-style: none; padding-left: 0; counter-reset: contents; }
+        .contents-list li { counter-increment: contents; padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+        .contents-list li:last-child { border-bottom: none; }
+        .contents-list li::before { content: counter(contents, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); min-width: 2rem; }
+        .contents-list a { color: var(--text-primary); text-decoration: none; }
+        .contents-list a:hover { color: var(--accent); }
+        .footer { text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); font-size: 0.85rem; border-top: 1px solid var(--border); max-width: var(--max-width); margin: 0 auto; }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .person-card { display: grid; grid-template-columns: 90px 1fr; gap: 1rem; padding: 1rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.6rem; }
+        .person-photo { width: 90px; height: 90px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--accent); }
+        .person-card h4 { font-family: var(--font-display); margin-bottom: 0.2rem; color: var(--text-primary); }
+        .person-card .role { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+        .person-card p { font-size: 0.88rem; margin: 0; }
+        @media (max-width: 640px) {
+            .slide { padding: 3rem 1rem; min-height: auto; }
+            .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .diagram-grid.cols-2, .diagram-grid.cols-3 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+            table { font-size: 0.78rem; }
+            .person-card { grid-template-columns: 60px 1fr; }
+            .person-photo { width: 60px; height: 60px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">LLM History Series &mdash; Presentation 11</div>
+    <h1>NVIDIA, AI2 &amp; <span class="accent">The Open-Model Builders</span></h1>
+    <p class="subtitle">The producers outside the consumer-chat race. The chip vendor that builds models to sell hardware, the non-profits that publish everything down to the training logs, the platform that hosts it all, and the enterprise labs that ship Apache-2.0 weights. Nemotron, OLMo, the Pile, BLOOM, DBRX, Granite, Phi and Falcon &mdash; and why none of them are trying to be ChatGPT.</p>
+
+    <div class="tags">
+        <span class="tag g">NVIDIA</span><span class="tag g">Nemotron</span><span class="tag y">AI2 / OLMo</span>
+        <span class="tag">EleutherAI</span><span class="tag">BLOOM</span><span class="tag r">Hugging Face</span>
+        <span class="tag">DBRX</span><span class="tag">Granite</span><span class="tag">Phi</span><span class="tag">Falcon</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">Megatron-LM (2019)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">The Pile (2020)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">BLOOM (2022)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">OLMo (Feb 2024)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Nemotron-4 340B (2024)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">open + hardware-vendor models (2026)</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>What This Deck Covers</h2>
+    <p>Decks 05&ndash;09 profiled the labs racing to ship the best chat assistant &mdash; OpenAI, Anthropic, Google DeepMind, Meta/Mistral/xAI, and the Chinese labs. This deck profiles a different population: producers whose <em>reason for shipping a model is not to win the consumer-chat market</em>. A chip vendor seeding demand for its hardware (NVIDIA). Non-profits doing reproducible open science (AI2, EleutherAI, BigScience). The platform that distributes everyone's weights (Hugging Face). Data and cloud companies shipping permissively-licensed enterprise models (Databricks, IBM, Snowflake, AI21). And the small-model and sovereign builders (Microsoft Phi, TII Falcon).</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">A Different Axis &mdash; Not Everyone Wants to Be ChatGPT</a></li>
+        <li><a href="#slide-02">NVIDIA &mdash; The Compute Vendor That Also Builds Models</a></li>
+        <li><a href="#slide-03">The Nemotron Line &amp; the People Behind It</a></li>
+        <li><a href="#slide-04">AI2 / Allen Institute &mdash; Truly-Open Science</a></li>
+        <li><a href="#slide-05">The OLMo Family &amp; the "How Open?" Spectrum</a></li>
+        <li><a href="#slide-06">EleutherAI &mdash; The Grassroots Open-Source Era</a></li>
+        <li><a href="#slide-07">BigScience / BLOOM &amp; Hugging Face</a></li>
+        <li><a href="#slide-08">Enterprise Open-Weight Builders</a></li>
+        <li><a href="#slide-09">Microsoft Phi &amp; the Small-Model / Data-Quality School</a></li>
+        <li><a href="#slide-10">Sovereign &amp; Hyperscaler Builders</a></li>
+        <li><a href="#slide-11">The Strategic Map &mdash; Why These Builders Exist</a></li>
+        <li><a href="#slide-12">Cheat Sheet</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>A Different Axis &mdash; Not Everyone Wants to Be ChatGPT</h2>
+    <p>The frontier labs are easy to rank because they are all playing the same game: the best general-purpose assistant, sold by subscription and API. The producers in this deck are harder to compare because they are optimising for different things. Ranking them on chatbot-arena Elo misses the point of why they exist.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The four motivations</h4>
+            <ul>
+                <li><strong>Sell the shovels.</strong> A model that makes your hardware or cloud more valuable (NVIDIA, Amazon, Snowflake).</li>
+                <li><strong>Do the science.</strong> Reproducible, fully-documented models so researchers can study how LLMs actually work (AI2, EleutherAI).</li>
+                <li><strong>Own the distribution.</strong> Be the place everyone downloads models from (Hugging Face).</li>
+                <li><strong>Serve the enterprise.</strong> Permissively-licensed, indemnified, on-prem-deployable models for regulated buyers (IBM, Databricks).</li>
+            </ul>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Why they matter to the field</h4>
+            <ul>
+                <li>They supply the <strong>open weights, datasets and training code</strong> that the rest of the ecosystem is built on.</li>
+                <li>They produce most of the <strong>publicly studyable</strong> science &mdash; the frontier labs publish results, these labs publish artifacts.</li>
+                <li>They set the <strong>floor on price</strong> and the <strong>ceiling on lock-in</strong>: every open model is a competitive constraint on the closed ones.</li>
+                <li>They are where <strong>synthetic data, reward models and small-model recipes</strong> are pioneered.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">A note on the word "open"</div>
+        <p>"Open" is used loosely in this field and the differences matter. <strong>Open weights</strong> (Llama, Mistral, Nemotron, DBRX, Falcon) means you can download and run the model; the data and recipe stay private. <strong>Open source / open science</strong> (OLMo, Pythia, BLOOM) means the weights <em>plus</em> the training data, the code, and often the intermediate checkpoints and logs &mdash; enough to reproduce the model from scratch. Slide 05 lays out the full spectrum.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>NVIDIA &mdash; The Compute Vendor That Also Builds Models</h2>
+    <p>NVIDIA sells the GPUs that almost every model in this entire series was trained on. It does not need a chatbot business. But it builds models anyway &mdash; and has done since before the LLM boom &mdash; for a precise strategic reason: <strong>every reference model, training recipe and software library it ships makes its hardware easier to buy and harder to leave.</strong></p>
+
+    <p>NVIDIA's model lineage long predates ChatGPT:</p>
+    <ul>
+        <li><strong>Megatron-LM (2019).</strong> Not a model so much as a technique &mdash; the tensor- and pipeline-parallel training framework that made multi-billion-parameter training practical. The Megatron parallelism strategy underpins a large fraction of all large-model training since, including work at other labs.</li>
+        <li><strong>Megatron-Turing NLG 530B (2021).</strong> A joint NVIDIA&ndash;Microsoft model, briefly one of the largest dense LLMs in the world. A demonstration of the stack more than a product.</li>
+        <li><strong>NeMo.</strong> NVIDIA's end-to-end framework for training and customising LLMs and speech models &mdash; the software layer that turns GPU clusters into a model factory.</li>
+    </ul>
+
+    <div class="callout g">
+        <div class="callout-label">The strategy in one sentence</div>
+        <p>NVIDIA's models are <strong>razors sold to move blades the other way round</strong>: the models, datasets, reward models and frameworks are (mostly) free and openly licensed, because their entire purpose is to increase the number of GPU-hours the world wants to buy. NVIDIA wins whether you train your model or theirs &mdash; as long as you train it on their silicon.</p>
+    </div>
+
+    <p>That posture is why NVIDIA has become one of the most prolific publishers of <strong>openly-licensed</strong> models, datasets and tooling &mdash; it has no incentive to keep them closed, and a strong incentive to make the open ecosystem thrive on CUDA.</p>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>The Nemotron Line &amp; the People Behind It</h2>
+    <p>Nemotron is NVIDIA's family of openly-licensed language models. The defining release was <strong>Nemotron-4 340B (June 2024)</strong> &mdash; shipped as a trio of base, instruct and <em>reward</em> models under the permissive NVIDIA Open Model License. Its headline idea was not raw capability but <strong>synthetic data generation</strong>: the alignment data was overwhelmingly model-generated, and NVIDIA released the pipeline so others could generate their own training data with it.</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>When</th><th>Release</th><th>What it added</th></tr></thead>
+        <tbody>
+            <tr><td>2019</td><td>Megatron-LM</td><td>Tensor/pipeline parallelism &mdash; the training method, not a product.</td></tr>
+            <tr><td>2021</td><td>Megatron-Turing NLG 530B</td><td>Joint with Microsoft; a stack demonstration at extreme scale.</td></tr>
+            <tr><td>2024</td><td>Nemotron-4 15B / 340B</td><td>Open base + instruct + <strong>reward</strong> models; synthetic-data pipeline as the headline.</td></tr>
+            <tr><td>2025</td><td>Llama-Nemotron (Nano / Super / Ultra)</td><td>Reasoning-tuned models built on Llama bases; tiered for edge-to-datacentre.</td></tr>
+            <tr><td>2025</td><td>Nemotron-H</td><td>Hybrid Mamba&ndash;Transformer line, trading attention for throughput on long context.</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="person-card">
+        <div class="person-photo">JH</div>
+        <div>
+            <h4>Jensen Huang &mdash; co-founder &amp; CEO, NVIDIA</h4>
+            <div class="role">Co-founded NVIDIA in 1993; CEO ever since</div>
+            <p>Taiwanese-American. The strategist behind treating AI software &mdash; CUDA, libraries, frameworks, and now models &mdash; as the moat around the hardware. NVIDIA's model releases are an expression of his long-running thesis that the company sells a platform, not a chip.</p>
+        </div>
+    </div>
+
+    <div class="person-card">
+        <div class="person-photo">BC</div>
+        <div>
+            <h4>Bryan Catanzaro &mdash; VP, Applied Deep Learning Research</h4>
+            <div class="role">Leads much of NVIDIA's model and applied-research work</div>
+            <p>A Megatron-LM co-author and long-time leader of NVIDIA's applied deep-learning research. His org produces the Nemotron models, the NeMo framework, and a steady stream of training and inference techniques that ship back into the wider community.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why a reward model was the interesting part</div>
+        <p>Most labs guard their reward models &mdash; they encode the lab's taste and are central to RLHF. NVIDIA <em>released</em> Nemotron-4 340B's reward model and topped reward-model leaderboards with it, precisely because giving everyone a good reward model and a synthetic-data generator lowers the barrier to <em>training models on NVIDIA hardware</em>. It is the shovel strategy applied to the post-training stack.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>AI2 / Allen Institute &mdash; Truly-Open Science</h2>
+    <p>The <strong>Allen Institute for AI (AI2)</strong> was founded in Seattle in 2014 by Microsoft co-founder <strong>Paul Allen</strong>, with computer scientist Oren Etzioni as founding CEO. It is a non-profit research institute, not a company &mdash; which frees it to do the one thing the commercial labs structurally cannot: release <em>everything</em>.</p>
+
+    <div class="person-card">
+        <div class="person-photo">PA</div>
+        <div>
+            <h4>Paul Allen &mdash; founder (1953&ndash;2018)</h4>
+            <div class="role">Microsoft co-founder; funded AI2 as a non-profit</div>
+            <p>Endowed AI2 (alongside the Allen Institute for Brain Science and others) as part of a long-running philanthropic bet on open, foundational research. He died in 2018; the institute continues under his foundation.</p>
+        </div>
+    </div>
+
+    <div class="person-card">
+        <div class="person-photo">AF</div>
+        <div>
+            <h4>Ali Farhadi &mdash; CEO, AI2</h4>
+            <div class="role">CEO since 2023; computer-vision researcher (University of Washington)</div>
+            <p>Returned to lead AI2 in 2023 and made fully-open foundation models the institute's flagship mission &mdash; the OLMo programme is the direct result. Known earlier for YOLO-era object detection and for XNOR-Net (binary neural networks).</p>
+        </div>
+    </div>
+
+    <div class="person-card">
+        <div class="person-photo">HH</div>
+        <div>
+            <h4>Hanna Hajishirzi &mdash; research lead</h4>
+            <div class="role">Senior director of NLP research, AI2; professor, University of Washington</div>
+            <p>A driving force behind OLMo and the T&uuml;lu post-training work. With colleagues such as Noah Smith and Luca Soldaini, she anchors AI2's "release the data and the recipe, not just the weights" philosophy.</p>
+        </div>
+    </div>
+
+    <div class="callout y">
+        <div class="callout-label">What "non-profit" buys you</div>
+        <p>AI2 has no API revenue to protect and no investors demanding a closed moat. That is exactly why it can publish the training data, the data-processing code, the training code, and the checkpoints &mdash; the things a commercial lab treats as trade secrets. The output is less a product than a <strong>public good for the research community</strong>: a model you can actually study, not just call.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>The OLMo Family &amp; the "How Open?" Spectrum</h2>
+    <p>AI2's <strong>OLMo (Open Language Model)</strong>, first released in February 2024, was the first genuinely competitive LLM shipped with the <em>entire</em> production stack open. The point was reproducibility: a model that researchers could take apart, retrain, and audit end to end.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel y">
+            <h4>The AI2 open stack</h4>
+            <ul>
+                <li><strong>OLMo</strong> &mdash; the base and instruct models (and OLMo 2; OLMoE, a mixture-of-experts variant).</li>
+                <li><strong>Dolma</strong> &mdash; the open multi-trillion-token pretraining dataset, released with its curation tooling.</li>
+                <li><strong>T&uuml;lu</strong> &mdash; open post-training recipes (SFT + preference tuning + RL), through T&uuml;lu 3.</li>
+                <li><strong>Molmo</strong> &mdash; open multimodal (vision-language) models.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>What ships with OLMo</h4>
+            <ul>
+                <li>Final weights <em>and</em> hundreds of intermediate checkpoints.</li>
+                <li>The full training dataset (Dolma).</li>
+                <li>Training, data-processing and evaluation code.</li>
+                <li>Training logs, metrics and ablations &mdash; the "lab notebook".</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>The openness spectrum</h3>
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Level</th><th>What you get</th><th>Examples</th></tr></thead>
+        <tbody>
+            <tr><td>Closed</td><td>API access only; no weights.</td><td>GPT-5, Claude, Gemini</td></tr>
+            <tr><td>Open weights</td><td>Downloadable weights; data &amp; recipe private; licence may restrict use.</td><td>Llama, Mistral, Nemotron, DBRX, Falcon, Gemma</td></tr>
+            <tr><td>Open weights + permissive licence</td><td>As above, under Apache-2.0/MIT &mdash; no usage strings.</td><td>Granite, Arctic, OLMo, many Falcon/Qwen releases</td></tr>
+            <tr><td>Fully open / reproducible</td><td>Weights + data + code + checkpoints + logs.</td><td>OLMo, Pythia, BLOOM</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="callout g">
+        <div class="callout-label">Why the distinction is load-bearing</div>
+        <p>You cannot do real science on a model whose training data you cannot see. Questions like "did it memorise this benchmark?", "where did this bias come from?", and "how do capabilities emerge during training?" are only answerable with the data and the checkpoints. The fully-open labs &mdash; AI2, EleutherAI, BigScience &mdash; exist largely to keep that kind of question answerable.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>EleutherAI &mdash; The Grassroots Open-Source Era</h2>
+    <p>When GPT-3 appeared in 2020 it was closed, and there was no open equivalent. <strong>EleutherAI</strong> started in July 2020 as a Discord collective &mdash; Connor Leahy, Sid Black, Leo Gao and a rotating cast of volunteers &mdash; with the explicit goal of building an open GPT-3. For two years it was the centre of gravity of open LLM research, before the corporate open-weight labs existed.</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>When</th><th>Release</th><th>Significance</th></tr></thead>
+        <tbody>
+            <tr><td>2020</td><td>The Pile</td><td>An 825&nbsp;GB curated, diverse text dataset &mdash; the open pretraining corpus an entire generation of models was trained on.</td></tr>
+            <tr><td>2021</td><td>GPT-Neo / GPT-J-6B</td><td>The first widely-used open GPT-3-style models; GPT-J-6B became a community default.</td></tr>
+            <tr><td>2022</td><td>GPT-NeoX-20B</td><td>The largest open dense model at release; its codebase trained many later models.</td></tr>
+            <tr><td>2023</td><td>Pythia</td><td>A suite of models across scales with full checkpoints &mdash; built specifically for interpretability and training-dynamics research.</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="person-card">
+        <div class="person-photo">SB</div>
+        <div>
+            <h4>Stella Biderman &mdash; Executive Director, EleutherAI</h4>
+            <div class="role">Led the transition to a non-profit research institute</div>
+            <p>A central figure in EleutherAI's research output (the Pile, Pythia) and in turning a volunteer Discord into a sustained non-profit lab. Pythia in particular has become a standard substrate for studying how models learn.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Legacy</div>
+        <p>EleutherAI's lasting contribution is less any single model than a <strong>proof of concept and a toolchain</strong>: it showed a distributed group of volunteers could train serious models in the open, and it produced the datasets (the Pile) and code (GPT-NeoX) that later open efforts &mdash; including some commercial ones &mdash; were built on. Several alumni went on to found or staff labs covered elsewhere in this series.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>BigScience / BLOOM &amp; Hugging Face</h2>
+
+    <h3>BigScience &amp; BLOOM &mdash; the public-supercomputer model</h3>
+    <p><strong>BigScience</strong> was a year-long open research workshop (2021&ndash;2022) coordinated through Hugging Face, bringing together more than a thousand researchers from 60+ countries. Its flagship output, <strong>BLOOM (July 2022)</strong>, was a 176-billion-parameter multilingual model covering 46 natural and 13 programming languages &mdash; trained on the <strong>Jean Zay</strong> public supercomputer in France under a national compute grant, and released openly under a Responsible AI License.</p>
+
+    <div class="callout y">
+        <div class="callout-label">Why BLOOM mattered</div>
+        <p>BLOOM proved a frontier-scale model could be built by an <strong>international academic consortium on public compute</strong>, with full transparency about data and governance, rather than by a single well-funded company. It was a deliberate counter-model to the closed-lab playbook &mdash; and an early demonstration of multilingual coverage as a first-class goal rather than an afterthought.</p>
+    </div>
+
+    <h3>Hugging Face &mdash; the distribution layer</h3>
+    <p>Founded in 2016 by <strong>Cl&eacute;ment Delangue, Julien Chaumond and Thomas Wolf</strong> (originally as a chatbot app), Hugging Face pivoted into infrastructure and became indispensable through two assets: the <strong>Transformers</strong> library and the <strong>Hub</strong>. Nearly every open model in this deck is downloaded from, and benchmarked on, Hugging Face.</p>
+    <ul>
+        <li><strong>The Hub</strong> &mdash; the de facto registry for open models, datasets and demos (Spaces). The GitHub of models.</li>
+        <li><strong>Coordination</strong> &mdash; HF convened BigScience/BLOOM and co-runs BigCode (StarCoder, with ServiceNow).</li>
+        <li><strong>Own models &amp; data</strong> &mdash; the SmolLM small-model family, the FineWeb open dataset, and fine-tunes like Zephyr &mdash; built largely to push the open ecosystem forward rather than to sell a chatbot.</li>
+    </ul>
+
+    <div class="callout g">
+        <div class="callout-label">The quiet kingmaker</div>
+        <p>Hugging Face ships relatively few frontier models of its own, yet it may be the most structurally important company in this deck: it owns the <strong>distribution and tooling layer</strong> the entire open ecosystem runs on. When a new open model lands, "it's on Hugging Face within the hour" is the measure of whether it exists.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>Enterprise Open-Weight Builders</h2>
+    <p>A cluster of data and cloud companies ship open-weight models aimed not at consumers but at <strong>enterprises that need permissive licences, on-prem deployment, indemnification and governance</strong>. The model is a feature of the platform, not the product.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Databricks / MosaicML &mdash; DBRX</h4>
+            <p>MosaicML (founded 2021 by Naveen Rao &amp; Hanlin Tang) shipped the open <strong>MPT</strong> models in 2023, then was acquired by <strong>Databricks</strong> for around $1.3&nbsp;B. The result was <strong>DBRX (March 2024)</strong>, a 132B mixture-of-experts model &mdash; among the strongest open models at release &mdash; sold as a way to build custom models on your own data inside Databricks.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>IBM &mdash; Granite</h4>
+            <p>IBM's <strong>Granite</strong> family (language, code, time-series, guardrails) ships under <strong>Apache 2.0</strong> with IP indemnification, as part of the watsonx platform. The pitch is squarely enterprise: transparent training-data provenance, legal cover, and governance for regulated industries.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Snowflake &mdash; Arctic</h4>
+            <p><strong>Arctic (April 2024)</strong> is an Apache-2.0 mixture-of-experts model from Snowflake's AI research group, tuned for enterprise tasks (SQL, coding, instruction-following) and designed to be cheap to train &mdash; a model that makes Snowflake's data cloud more useful.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>AI21 Labs &mdash; Jamba</h4>
+            <p>Israeli lab (founded 2017 by Amnon Shashua, Yoav Shoham &amp; Ori Goshen). After the Jurassic series, <strong>Jamba (2024)</strong> was the first production-grade <strong>Mamba&ndash;Transformer hybrid</strong> with open weights and very long context &mdash; an architectural bet, not a chatbot.</p>
+        </div>
+    </div>
+
+    <p>Adjacent to these sit <strong>Salesforce</strong> (CodeGen, xGen, the SFR embedding/agent models) and <strong>ServiceNow</strong> (co-founder of BigCode/StarCoder) &mdash; software vendors building open models to strengthen their own platforms rather than to compete in chat.</p>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>Microsoft Phi &amp; the Small-Model / Data-Quality School</h2>
+    <p>Separate from Microsoft's frontier ambitions (its OpenAI stake and the Inflection-derived Microsoft AI group, both covered in deck 08), <strong>Microsoft Research</strong> runs the <strong>Phi</strong> programme &mdash; a deliberate counter-bet to scale. The thesis, captured in the 2023 paper title <em>"Textbooks Are All You Need"</em>, is that <strong>data quality beats data quantity</strong>: carefully curated and synthetically-generated "textbook-quality" data can make a small model punch far above its parameter count.</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>When</th><th>Model</th><th>Idea</th></tr></thead>
+        <tbody>
+            <tr><td>2023</td><td>Phi-1 / Phi-1.5</td><td>~1.3B; "textbook-quality" code and reasoning data &mdash; small but surprisingly capable.</td></tr>
+            <tr><td>2023</td><td>Phi-2</td><td>2.7B; competitive with much larger models on reasoning benchmarks.</td></tr>
+            <tr><td>2024</td><td>Phi-3 (mini/small/medium)</td><td>Small models good enough to run on a phone; MIT-licensed open weights.</td></tr>
+            <tr><td>2024&ndash;25</td><td>Phi-4 (&amp; reasoning variants)</td><td>~14B; pushed the data-quality recipe toward strong reasoning at small scale.</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why small models are a category, not a consolation prize</div>
+        <p>Small, openly-licensed models matter for reasons the leaderboards understate: they run <strong>on-device</strong> (privacy, latency, no per-token cost), they are <strong>cheap to fine-tune</strong>, and they are the natural fit for edge and embedded deployment. The data-quality school &mdash; Phi, AI2's smaller OLMo variants, Hugging Face's SmolLM, and the small ends of Qwen, Gemma and Llama &mdash; is where a lot of the field's practical deployment actually happens.</p>
+    </div>
+
+    <p>S&eacute;bastien Bubeck and colleagues drove much of the early Phi work at MSR (Bubeck later moved to OpenAI), establishing curated/synthetic data as a first-class lever rather than a shortcut.</p>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>Sovereign &amp; Hyperscaler Builders</h2>
+
+    <h3>Sovereign &mdash; TII Falcon</h3>
+    <p>The <strong>Technology Innovation Institute (TII)</strong> in Abu Dhabi is a UAE government research body, and its <strong>Falcon</strong> models are a national-capability play. <strong>Falcon 40B (2023)</strong> briefly topped the open leaderboards; <strong>Falcon 180B (Sept 2023)</strong> was the largest openly-available model at release. TII also released the <strong>RefinedWeb</strong> dataset and has continued with Falcon 2, Falcon 3 and hybrid (Falcon-H1) lines. The motivation is sovereignty: a region building frontier-class AI in the open rather than renting it from US labs.</p>
+
+    <h3>Hyperscalers &mdash; building in-house</h3>
+    <p>The big clouds increasingly build their own foundation models &mdash; usually <strong>closed</strong>, offered only through their platforms, to avoid depending on a rival:</p>
+    <ul>
+        <li><strong>Amazon</strong> &mdash; after the Titan models, the <strong>Nova</strong> family (announced late 2024) on Bedrock. (Amazon is also a major Anthropic investor &mdash; build <em>and</em> buy.)</li>
+        <li><strong>Microsoft &amp; Google</strong> &mdash; covered elsewhere, but note Google's <strong>Gemma</strong> is the open-weight sibling of Gemini (deck 07), and Microsoft spans the OpenAI stake, Microsoft AI, and the open Phi line.</li>
+    </ul>
+
+    <div class="callout y">
+        <div class="callout-label">Two different bets on "open"</div>
+        <p>Sovereign builders go <strong>open</strong> on purpose &mdash; the whole point is broad, unrestricted access to a strategic capability. Hyperscalers mostly go <strong>closed</strong> for their own flagship models &mdash; the model is a way to keep customers on the cloud. Same act (build your own model), opposite licensing logic, driven by opposite incentives.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-11">
+    <div class="slide-number">11</div>
+    <h2>The Strategic Map &mdash; Why These Builders Exist</h2>
+    <p>None of the producers in this deck are trying to win the consumer-assistant market. Sorting them by <em>motivation</em> rather than capability makes the landscape legible:</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel g">
+            <h4>Sell the shovels</h4>
+            <ul>
+                <li><strong>NVIDIA</strong> &mdash; Nemotron, Megatron, NeMo; models to sell GPUs.</li>
+                <li><strong>Amazon / Snowflake / Databricks</strong> &mdash; models to sell cloud &amp; data platforms.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Do the science</h4>
+            <ul>
+                <li><strong>AI2</strong> &mdash; OLMo, Dolma, T&uuml;lu, Molmo; fully reproducible.</li>
+                <li><strong>EleutherAI</strong> &mdash; the Pile, Pythia; open research toolchain.</li>
+                <li><strong>BigScience</strong> &mdash; BLOOM; public-compute consortium.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel r">
+            <h4>Own / serve the platform</h4>
+            <ul>
+                <li><strong>Hugging Face</strong> &mdash; the distribution &amp; tooling layer.</li>
+                <li><strong>IBM</strong> &mdash; Granite; enterprise governance &amp; indemnity.</li>
+                <li><strong>Salesforce / ServiceNow</strong> &mdash; models inside their software.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Specialise</h4>
+            <ul>
+                <li><strong>Microsoft Phi</strong> &mdash; small models, data quality.</li>
+                <li><strong>AI21</strong> &mdash; SSM/Transformer hybrids (Jamba).</li>
+                <li><strong>TII Falcon</strong> &mdash; sovereign, open, regional.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>The geographic spread</h3>
+    <p>The US dominates (NVIDIA in Santa Clara; AI2 and Amazon in Seattle; Databricks in San Francisco; IBM and Microsoft Research; ServiceNow and Salesforce). But this tier is the most internationally distributed in the series: <strong>France</strong> (BLOOM, on Jean Zay; Hugging Face's Paris roots), <strong>Israel</strong> (AI21), the <strong>UAE</strong> (TII Falcon), and EleutherAI's borderless volunteer base. Open and sovereign motivations travel further than the consumer-chat race does.</p>
+</section>
+
+<section class="slide" id="slide-12">
+    <div class="slide-number">12</div>
+    <h2>Cheat Sheet</h2>
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Producer</th><th>Type</th><th>Flagship models</th><th>Openness</th><th>Why it ships models</th></tr></thead>
+        <tbody>
+            <tr><td>NVIDIA</td><td>Chip vendor</td><td>Megatron-LM, Nemotron-4 340B, Llama-Nemotron</td><td>Open weights (permissive)</td><td>Drive demand for GPUs</td></tr>
+            <tr><td>AI2 (Allen Institute)</td><td>Non-profit</td><td>OLMo, OLMo 2, Dolma, T&uuml;lu, Molmo</td><td>Fully open / reproducible</td><td>Open science</td></tr>
+            <tr><td>EleutherAI</td><td>Non-profit</td><td>The Pile, GPT-J, GPT-NeoX, Pythia</td><td>Fully open / reproducible</td><td>Open research toolchain</td></tr>
+            <tr><td>BigScience</td><td>Consortium</td><td>BLOOM 176B</td><td>Fully open (RAIL)</td><td>Public-compute science</td></tr>
+            <tr><td>Hugging Face</td><td>Platform</td><td>Hub, Transformers; SmolLM, StarCoder*</td><td>Open</td><td>Own the distribution layer</td></tr>
+            <tr><td>Databricks / MosaicML</td><td>Data platform</td><td>MPT, DBRX</td><td>Open weights</td><td>Build-on-your-data platform</td></tr>
+            <tr><td>IBM</td><td>Enterprise IT</td><td>Granite</td><td>Open weights (Apache-2.0)</td><td>Enterprise governance / watsonx</td></tr>
+            <tr><td>Snowflake</td><td>Data cloud</td><td>Arctic</td><td>Open weights (Apache-2.0)</td><td>Make the data cloud useful</td></tr>
+            <tr><td>AI21 Labs</td><td>Independent</td><td>Jurassic, Jamba</td><td>Open weights</td><td>Architectural differentiation</td></tr>
+            <tr><td>Microsoft (Phi)</td><td>Research lab</td><td>Phi-1 &rarr; Phi-4</td><td>Open weights (MIT)</td><td>Small models / data quality</td></tr>
+            <tr><td>TII (UAE)</td><td>Sovereign</td><td>Falcon 40B/180B, Falcon 3</td><td>Open weights (permissive)</td><td>National AI capability</td></tr>
+            <tr><td>Amazon</td><td>Hyperscaler</td><td>Titan, Nova</td><td>Closed (Bedrock-only)</td><td>Keep customers on the cloud</td></tr>
+        </tbody>
+    </table>
+    </div>
+    <p style="font-size:0.8rem; margin-top:0.5rem;">*StarCoder/BigCode is a Hugging Face &amp; ServiceNow collaboration. Licences and model versions evolve quickly &mdash; check each producer's model cards for the current terms.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel g">
+            <h4>The one-line takeaway</h4>
+            <p>These are the producers building models <strong>for reasons other than winning chat</strong> &mdash; and together they supply most of the open weights, data and tooling the rest of the field runs on.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Cross-references</h4>
+            <ul>
+                <li>05&ndash;07 &mdash; OpenAI, Anthropic, DeepMind/Google (incl. Gemma).</li>
+                <li>08 &mdash; Meta, Mistral, xAI, Microsoft AI.</li>
+                <li>09 &mdash; Chinese labs (Qwen, DeepSeek).</li>
+            </ul>
+        </div>
+        <div class="diagram-panel r">
+            <h4>Where this leads</h4>
+            <ul>
+                <li>10 &mdash; Future directions: the open-weight ecosystem these builders created.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLM_Hub_LLM_History">LLM History series</a> in the <a href="https://github.com/BrendanJamesLynskey/LLMs">LLMs hub</a>.</p>
+    <p style="margin-top: 0.5rem;"><a href="https://brendanjameslynskey.github.io/LLM_History_10_Future_Directions/">&larr; 10 Future Directions</a> &middot; <a href="https://github.com/BrendanJamesLynskey/LLM_Hub_LLM_History">Series Index &rarr;</a></p>
+</footer>
+
+</body>
+</html>
